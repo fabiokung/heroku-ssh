@@ -27,13 +27,13 @@ cd ..
 git push heroku master
 ```
 
-After it's deployed, test your ssh connection:
+After it is deployed, test your ssh connection:
 
 ```term
 $ heroku run sshable bash
 Running `sshable bash` attached to terminal... up, run.1
 (dyno) ~ $ hostname
-DYNO_UUID # this will be a UUIDv4 string to be used later
+DYNO_UUID # this will be an UUIDv4 string to be used later
 ```
 
 Then, in a different terminal:
@@ -48,12 +48,12 @@ Each dyno has its own unique identifier, available as `hostname` inside them.
 `heroku ssh` requires these ids, but unfortunately it is not yet possible to
 retrieve them via the heroku API (or CLI).
 
-A possible way to obtain them is to add logic to your app to print `hostname` to
-`stdout`. That way, dyno uuids will be available in `heroku logs`. Alternatively,
-each dyno can register itself in a stable service or datastore (heroku add-ons,
-redis, postgresql, etc).
+A possible way to expose them is with custom logic to apps, printing `hostname`
+to `stdout`. That will cause dyno uuids to be available in `heroku logs`.
+Alternatively, each dyno can register itself in a stable service or datastore
+(heroku add-ons, redis, postgresql, etc).
 
-Once uuids are somehow available, ssh support needs to be enabled for each
+Once uuids are available somehow, ssh support needs to be enabled for each
 process type by adding `sshable` to Procfile entries:
 
 ```javascript
