@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require "socket"
+require "openssl"
+require "uri"
+
+module Rendezvous
+  class Client
+
+    def initialize(url)
+      @url = url
+    end
+
+    def connect(ca_file=nil)
+      $stdout.sync = true
+      uri = URI.parse(@url)
+      host, port, secret = uri.host, uri.port, uri.path[1..-1]
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      ssl_context.ca_file = ca_file if ca_file
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_PEER if ENV["RENDEZVOUS_FORCE_SSL_VERIFY"]
+      begin
+        tcp_socket = TCPSocket.open(host, port)
+        ssl_socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
+        ssl_socket.connect
+        ssl_socket.sync_close = true
+        ssl_socket.puts(secret)
+        ssl_socket.readline
+
+        loop do
+          if o = IO.select([$stdin, tcp_socket], nil, nil, nil)
+            if o.first.first == $stdin
+              data = $stdin.readpartial(1000)
+              ssl_socket.write(data)
+              ssl_socket.flush
+            elsif o.first.first == tcp_socket
+              data = ssl_socket.readpartial(1000)
+              $stdout.write(data)
+            end
+          end
+        end
+      rescue OpenSSL::SSL::SSLError
+        raise
+      rescue Interrupt, EOFError
+      end
+    end
+  end
+end
+
+unless ARGV.size == 1
+  abort("Usage: rendezvous HOSTNAME")
+end
+
+url = "rendezvous://rendezvous.runtime.heroku.com:5000/rendezvous-dyno-ssh-ksecret-#{ARGV.first}"
+Rendezvous::Client.new(url).connect
