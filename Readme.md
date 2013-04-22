@@ -84,7 +84,7 @@ heroku ssh WORKER_UUID
 ## Known issues
 
 * No concurrent connections. Currently only a single connection is supported.
-* Dynos will stop accepting new connections for 10s after one terminates.
+* Dynos will stop accepting new ssh connections for 10s after one terminates.
 * Lack of visibility on errors.
 * Alpha stage.
 * Dyno uuids not available in the heroku API (eg.: `heroku ps` could list them).
