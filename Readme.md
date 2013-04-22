@@ -8,8 +8,16 @@ heroku plugins:install https://github.com/fabiokung/heroku-ssh.git
 
 ## Requirements
 
-First make sure your public ssh key is already authorized to ssh into your
-dynos:
+First, make sure your application has the `containerized-network` labs feature
+enabled:
+
+```term
+heroku labs
+# if not already enabled:
+heroku labs:enable containerized-network
+```
+
+Now, make sure your public ssh key is already authorized in dynos:
 
 ```term
 heroku help ssh
