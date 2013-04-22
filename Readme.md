@@ -8,6 +8,20 @@ heroku plugins:install https://github.com/fabiokung/heroku-ssh.git
 
 ## Requirements
 
+First make sure your public ssh key is already authorized to ssh into your
+dynos:
+
+```term
+heroku help ssh
+```
+
+To add a new key:
+
+```term
+$ heroku ssh:authorize
+Authorizing the key present in ~/.ssh/id_rsa.pub... done
+```
+
 Heroku dynos need to be **tagged** as ssh-able. This means that they need to run
 a special agent (daemon) to enable ssh connectivity.
 
