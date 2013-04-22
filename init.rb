@@ -23,4 +23,34 @@ class Heroku::Command::Ssh < Heroku::Command::Base
     exec("ssh", "-o", "ProxyCommand=#{rendezvous} #{hostname}", "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "dyno@#{hostname}")
   end
 
+  # ssh:keys
+  #
+  # Display public keys currently allowed to ssh into dynos.
+  #
+  def keys
+    authorized_keys = api.get_config_vars(app).body["AUTHORIZED_KEYS"].to_s.strip
+    return display "No public keys currently authorized" if authorized_keys.empty?
+    display authorized_keys
+  end
+
+  # ssh:authorize [FILENAME]
+  #
+  # Authorize a new public key to ssh into dynos. FILENAME is `~/.ssh/id_rsa.pub`
+  # by default.
+  #
+  # New keys are prepended to the `AUTHORIZED_KEYS` config var. See `heroku
+  # help config` for more details on how to manipulate it.
+  #
+  def authorize
+    key_file = args.shift || File.join(Dir.home, ".ssh", "id_rsa.pub")
+    authorized_keys = api.get_config_vars(app).body["AUTHORIZED_KEYS"].to_s.strip
+    key = File.read(key_file).strip
+    return(display "The key found in #{key_file} is already authorized.") if
+      authorized_keys.include?(key)
+
+    display "Authorizing the key present in #{key_file}...", false
+    api.put_config_vars(app, "AUTHORIZED_KEYS" => "#{key}\n#{authorized_keys}")
+    display " done"
+  end
+
 end
