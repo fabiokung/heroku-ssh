@@ -80,7 +80,7 @@ process type by adding `sshable` to Procfile entries:
 
 ```javascript
 web: bundle exec rackup -p $PORT
-worker: sshable bundle exec sidekiq
+worker: sshable bundle exec bin/worker.rb
 ```
 
 In this case, one can ssh into `worker` dynos with:
