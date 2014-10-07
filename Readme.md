@@ -1,6 +1,6 @@
 # SSH-able dynos
 
-*IMPORTANT*: this is not being actively maintained anymore, and likely doesn't work anymore as-is. I'll keep it here to inspire/inform others trying to do the same thing.
+**IMPORTANT**: this is not being actively maintained anymore, and likely doesn't work anymore as-is. I'll keep it here to inspire/inform others trying to do the same thing.
 
 ## Installation
 
